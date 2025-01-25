@@ -4,13 +4,23 @@
         });
 
         function fetchUserData() {
-            fetch(`${window.location.origin}/_api/web/currentuser`, {
+            // Ensure the API request is made to the correct SharePoint site
+            const siteUrl = window.location.origin; // or specify your SharePoint site URL here
+
+            fetch(`${siteUrl}/_api/web/currentuser`, {
                 method: 'GET',
                 headers: {
-                    'Accept': 'application/json;odata=verbose'
-                }
+                    'Accept': 'application/json;odata=verbose',
+                    'Authorization': `Bearer ${<YOUR_ACCESS_TOKEN>}` // Include the authorization token if necessary
+                },
+                credentials: 'include'  // Ensure cookies are sent with the request
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
             .then(data => {
                 const username = data.d.Title;
                 document.getElementById('username').innerText = `Hello, ${username}!`;
