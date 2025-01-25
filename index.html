@@ -1,19 +1,21 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>SharePoint Username</title></head><body><div id="username">Loading username...</div><script>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>GitHub Username</title></head><body><div id="username">Loading username...</div><script>
         document.addEventListener('DOMContentLoaded', function() {
             fetchUserData();
         });
 
         function fetchUserData() {
-            // Ensure the API request is made to the correct SharePoint site
-            const siteUrl = window.location.origin; // or specify your SharePoint site URL here
+            const apiUrl = 'https://api.github.com/user';  // This endpoint requires authentication
 
-            fetch(`${siteUrl}/_api/web/currentuser`, {
+            // Use your test GitHub access token
+            const accessToken = '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';
+
+            // Fetch configuration with authorization header
+            fetch(apiUrl, {
                 method: 'GET',
                 headers: {
-                    'Accept': 'application/json;odata=verbose',
-                    'Authorization': `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` // Include the authorization token if necessary
-                },
-                credentials: 'include'  // Ensure cookies are sent with the request
+                    'Accept': 'application/vnd.github.v3+json',  // GitHub API accepts this format
+                    'Authorization': `token ${accessToken}`
+                }
             })
             .then(response => {
                 if (!response.ok) {
@@ -22,7 +24,7 @@
                 return response.json();
             })
             .then(data => {
-                const username = data.d.Title;
+                const username = data.login;  // GitHub's username field is 'login'
                 document.getElementById('username').innerText = `Hello, ${username}!`;
             })
             .catch(error => {
